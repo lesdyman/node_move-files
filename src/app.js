@@ -10,17 +10,11 @@ const moveFile = (source, destination) => {
   let toPath = path.resolve(destination);
 
   if (!fs.existsSync(fromPath)) {
-    // eslint-disable-next-line no-console
-    console.error(`Source file does not exist: ${fromPath}`);
-
-    return;
+    throw new Error(`Source file does not exist: ${fromPath}`);
   }
 
   if (!fs.statSync(fromPath).isFile()) {
-    // eslint-disable-next-line no-console
-    console.error(`Source is not a file: ${fromPath}`);
-
-    return;
+    throw new Error(`Source is not a file: ${fromPath}`);
   }
 
   const destEndsWithSeparator = /[/\\]$/.test(destination);
@@ -31,16 +25,10 @@ const moveFile = (source, destination) => {
     if (destStatus.isDirectory()) {
       toPath = path.join(toPath, path.basename(fromPath));
     } else if (destEndsWithSeparator) {
-      // eslint-disable-next-line no-console
-      console.error(`Destination is not a directory: ${toPath}`);
-
-      return;
+      throw new Error(`Destination is not a directory: ${toPath}`);
     }
   } else if (destEndsWithSeparator) {
-    // eslint-disable-next-line no-console
-    console.error(`Destination directory does not exist: ${toPath}`);
-
-    return;
+    throw new Error(`Destination directory does not exist: ${toPath}`);
   } else {
     const parentDir = path.dirname(toPath);
 
@@ -63,5 +51,14 @@ if (parameters.length !== 2) {
 } else {
   const [from, to] = parameters;
 
-  moveFile(from, to);
+  try {
+    moveFile(from, to);
+  } catch (error) {
+    if (error instanceof Error) {
+      // eslint-disable-next-line no-console
+      console.error(error.message);
+    } else {
+      throw error;
+    }
+  }
 }
