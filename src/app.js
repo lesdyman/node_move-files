@@ -33,10 +33,7 @@ const moveFile = (source, destination) => {
     const parentDir = path.dirname(toPath);
 
     if (!fs.existsSync(parentDir)) {
-      // eslint-disable-next-line no-console
-      console.error(`Destination directory does not exist: ${parentDir}`);
-
-      return;
+      throw new Error(`Destination directory does not exist: ${parentDir}`);
     }
   }
 
